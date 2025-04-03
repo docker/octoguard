@@ -45,10 +45,10 @@ jobs:
               ...context.repo,
             }).catch(error => {
               if (error.status === 403) {
-                core.setFailed('Advanced Security needs to be enabled on this repository.');
+                throw new Error('Advanced Security needs to be enabled on this repository.');
               }
             });
-            core.info('Advanced Security is enabled.');
+            core.info('Advanced Security is enabled on this repository.');
       -
         name: Setup uv
         if: ${{ env.HAS_WORKFLOWS }}
