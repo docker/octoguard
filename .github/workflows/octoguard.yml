@@ -1,0 +1,18 @@
+name: octoguard
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  zizmor:
+    uses: ./.github/workflows/zizmor.yml
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    with:
+      zizmor_version: 1.5.2
