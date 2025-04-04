@@ -41,14 +41,18 @@ jobs:
               return;
             }
 
-            await github.request('GET /repos/{owner}/{repo}/code-scanning/alerts', {
-              ...context.repo,
-            }).catch(error => {
-              if (error.status === 403) {
-                throw new Error('Advanced Security needs to be enabled on this repository.');
-              }
-            });
-            core.info('Advanced Security is enabled on this repository.');
+            try {
+              await github.request('GET /repos/{owner}/{repo}/code-scanning/alerts', {
+                ...context.repo,
+              }).catch(err => {
+                if (err.status === 403) {
+                  throw new Error('Advanced Security needs to be enabled on this repository.');
+                }
+              });
+              core.info('Advanced Security is enabled on this repository.');
+            } catch (err) {
+              core.setFailed(err.message);
+            }
       -
         name: Setup uv
         if: ${{ env.HAS_WORKFLOWS }}
