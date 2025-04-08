@@ -34,8 +34,13 @@ jobs:
         with:
           script: |
             const fs = require('fs');
+            const workflowsPath = '.github/workflows';
+            if (!fs.existsSync(workflowsPath)){
+              core.warning("No workflow directory found, skipping zizmor scan.");
+              return;
+            }
 
-            const workflows = fs.readdirSync('.github/workflows').filter(file => file.endsWith('.yml') || file.endsWith('.yaml'));
+            const workflows = fs.readdirSync(workflowsPath).filter(file => file.endsWith('.yml') || file.endsWith('.yaml'));
             if (workflows.length > 0) {
               core.info(`${workflows.length} workflows found in this repository.`);
               core.exportVariable('HAS_WORKFLOWS', 'true');
