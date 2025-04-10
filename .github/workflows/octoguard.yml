@@ -22,6 +22,8 @@ jobs:
       contents: read
       actions: read
       security-events: write
+    env:
+      TMPDIR: /tmp/zizmor
     steps:
       -
         name: Checkout
@@ -34,6 +36,8 @@ jobs:
         with:
           script: |
             const fs = require('fs');
+            fs.mkdirSync(process.env.TMPDIR, { recursive: true });
+            
             const workflowsPath = '.github/workflows';
             if (!fs.existsSync(workflowsPath)){
               core.warning("No workflow directory found, skipping zizmor scan.");
@@ -76,15 +80,21 @@ jobs:
       -
         name: Run zizmor
         if: ${{ env.HAS_WORKFLOWS }}
+        id: zizmor
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -ex
-          zizmor --min-severity=medium --min-confidence=medium --persona=pedantic --no-online-audits --format=sarif . > /tmp/zizmor.sarif
+          zizmor --min-severity=medium --min-confidence=medium --persona=pedantic --no-online-audits --format=sarif . > ${TMPDIR}/zizmor.sarif
+      -
+        name: Zizmor crash report
+        if: ${{ env.HAS_WORKFLOWS && failure() && steps.zizmor.conclusion == 'failure' }}
+        run: |
+          cat ${TMPDIR}/report-*.toml
       -
         name: Upload SARIF report
         if: ${{ env.HAS_WORKFLOWS }}
         uses: github/codeql-action/upload-sarif@v3 # zizmor: ignore[artipacked] fine to ignore official actions
         with:
-          sarif_file: /tmp/zizmor.sarif
+          sarif_file: ${{ env.TMPDIR }}/zizmor.sarif
           category: zizmor
