@@ -32,6 +32,7 @@ jobs:
           persist-credentials: false
       -
         name: Checks
+        id: checks_workflows
         uses: actions/github-script@v7 # zizmor: ignore[artipacked] fine to ignore official actions
         with:
           script: |
@@ -67,19 +68,19 @@ jobs:
             }
       -
         name: Setup uv
-        if: steps.checks.outputs.hasWorkflows == 'true'
+        if: steps.checks_workflows.outputs.hasWorkflows == 'true'
         uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
         with:
           enable-cache: false
       -
         name: Install zizmor
-        if: steps.checks.outputs.hasWorkflows == 'true'
+        if: steps.checks_workflows.outputs.hasWorkflows == 'true'
         run: |
           set -ex
           uv tool install zizmor@${ZIZMOR_VERSION}
       -
         name: Run zizmor
-        if: steps.checks.outputs.hasWorkflows == 'true'
+        if: steps.checks_workflows.outputs.hasWorkflows == 'true'
         id: zizmor
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -88,12 +89,12 @@ jobs:
           zizmor --min-severity=medium --min-confidence=medium --persona=pedantic --no-online-audits --format=sarif . > ${TMPDIR}/zizmor.sarif
       -
         name: Zizmor crash report
-        if: ${{ steps.checks.outputs.hasWorkflows == 'true' && failure() && steps.zizmor.conclusion == 'failure' }}
+        if: ${{ steps.checks_workflows.outputs.hasWorkflows == 'true' && failure() && steps.zizmor.conclusion == 'failure' }}
         run: |
           cat ${TMPDIR}/report-*.toml
       -
         name: Upload SARIF report
-        if: steps.checks.outputs.hasWorkflows == 'true'
+        if: steps.checks_workflows.outputs.hasWorkflows == 'true'
         uses: github/codeql-action/upload-sarif@v3 # zizmor: ignore[artipacked] fine to ignore official actions
         with:
           sarif_file: ${{ env.TMPDIR }}/zizmor.sarif
