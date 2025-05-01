@@ -8,9 +8,9 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read
-  actions: read
+# permissions:
+#   contents: read
+#   actions: read
 
 env:
   ZIZMOR_VERSION: 1.5.2
