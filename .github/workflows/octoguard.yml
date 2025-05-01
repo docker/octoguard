@@ -47,7 +47,6 @@ jobs:
             const workflows = fs.readdirSync(workflowsPath).filter(file => file.endsWith('.yml') || file.endsWith('.yaml'));
             if (workflows.length > 0) {
               core.info(`${workflows.length} workflows found in this repository.`);
-              # core.exportVariable('HAS_WORKFLOWS', 'true');
               core.setOutput('hasWorkflows', 'true');
             } else {
               core.warning("No workflows found, skipping zizmor scan.");
