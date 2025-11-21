@@ -69,7 +69,7 @@ jobs:
       -
         name: Setup uv
         if: ${{ env.HAS_WORKFLOWS }}
-        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+        uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7.1.4
         with:
           enable-cache: false
       -
