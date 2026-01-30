@@ -1,0 +1,19 @@
+name: Test Octoguard Workflow
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/octoguard.yml"
+      - ".github/workflows/test-octoguard.yml"
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  run-octoguard:
+    uses: ./.github/workflows/octoguard.yml
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
