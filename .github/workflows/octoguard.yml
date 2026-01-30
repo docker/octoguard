@@ -3,11 +3,7 @@ name: octoguard
 on:
   workflow_call:
   workflow_dispatch:
-  pull_request:
   merge_group:
-  push:
-    branches:
-      - main
 
 permissions:
   contents: read
@@ -26,19 +22,17 @@ jobs:
     env:
       TMPDIR: /tmp/zizmor
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v5 # zizmor: ignore[artipacked] fine to ignore official actions
         with:
           persist-credentials: false
-      -
-        name: Checks
+      - name: Checks
         uses: actions/github-script@v8 # zizmor: ignore[artipacked] fine to ignore official actions
         with:
           script: |
             const fs = require('fs');
             fs.mkdirSync(process.env.TMPDIR, { recursive: true });
-            
+
             const workflowsPath = '.github/workflows';
             if (!fs.existsSync(workflowsPath)){
               core.warning("No workflow directory found, skipping zizmor scan.");
@@ -66,20 +60,17 @@ jobs:
             } catch (err) {
               core.setFailed(err.message);
             }
-      -
-        name: Setup uv
+      - name: Setup uv
         if: ${{ env.HAS_WORKFLOWS }}
         uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
           enable-cache: false
-      -
-        name: Install zizmor
+      - name: Install zizmor
         if: ${{ env.HAS_WORKFLOWS }}
         run: |
           set -ex
           uv tool install zizmor@${ZIZMOR_VERSION}
-      -
-        name: Run zizmor
+      - name: Run zizmor
         if: ${{ env.HAS_WORKFLOWS }}
         id: zizmor
         env:
@@ -87,13 +78,11 @@ jobs:
         run: |
           set -ex
           zizmor --min-severity=medium --min-confidence=medium --persona=pedantic --no-online-audits --format=sarif . > ${TMPDIR}/zizmor.sarif
-      -
-        name: Zizmor crash report
+      - name: Zizmor crash report
         if: ${{ env.HAS_WORKFLOWS && failure() && steps.zizmor.conclusion == 'failure' }}
         run: |
           cat ${TMPDIR}/report-*.toml
-      -
-        name: Upload SARIF report
+      - name: Upload SARIF report
         if: ${{ env.HAS_WORKFLOWS }}
         uses: github/codeql-action/upload-sarif@v4 # zizmor: ignore[artipacked] fine to ignore official actions
         with:
