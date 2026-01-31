@@ -3,6 +3,7 @@ name: octoguard
 on:
   workflow_call:
   workflow_dispatch:
+  pull_request:
   merge_group:
 
 permissions:
