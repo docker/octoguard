@@ -23,7 +23,7 @@ jobs:
       TMPDIR: /tmp/zizmor
     steps:
       - name: Checkout
-        uses: actions/checkout@v5 # zizmor: ignore[artipacked] fine to ignore official actions
+        uses: actions/checkout@v6 # zizmor: ignore[artipacked] fine to ignore official actions
         with:
           persist-credentials: false
       - name: Checks
