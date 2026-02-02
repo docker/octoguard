@@ -11,7 +11,7 @@ permissions:
   actions: read
 
 env:
-  ZIZMOR_VERSION: 1.5.2
+  ZIZMOR_VERSION: 1.6.0
 
 jobs:
   zizmor:
